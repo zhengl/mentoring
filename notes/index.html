@@ -4,6 +4,10 @@
         <title>Notes</title>
     </head>
     <body>
+        <form name="addNoteForm" onsubmit="onAddNote(event, __ROOT__)">
+            <input type="text" name="newNote" placeholder="Please add note" />
+            <button type="submit">ADD</button>
+        </form>
         <ul id="notes" />
         <script>
             var __NOTES__ = [
@@ -11,20 +15,38 @@
                 'Dinner with Jane',
             ];
 
+            var __ROOT__ = document.getElementById('notes');
+
             function createNote(note) {
                 var element = document.createElement('li');
                 element.innerHTML = note;
+                var removeButton = document.createElement('button');
+                removeButton.innerHTML = 'REMOVE';
+                removeButton.onclick = function() {
+                    element.parentNode.removeChild(element);
+                    __NOTES__.splice(__NOTES__.indexOf(note), 1);
+                }
+                element.appendChild(removeButton);
                 return element;
             }
 
             function createNotes(notes, root) {
+                root.innerHTML = '';
                 notes.map(createNote).forEach(function(element) {
                     root.appendChild(element);
                 });
-
             }
 
-            createNotes(__NOTES__, document.getElementById('notes'));
+            function onAddNote(event, root) {
+                event.preventDefault();
+
+                var newNote = addNoteForm.newNote.value;
+                root.appendChild(createNote(newNote));
+                __NOTES__.push(newNote);
+                addNoteForm.newNote.value = '';
+            }
+
+            createNotes(__NOTES__, __ROOT__);
         </script>
     </body>
 </html>
