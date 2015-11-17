@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Notes</title>
+    </head>
+    <body>
+        <ul id="notes" />
+        <script>
+            var __NOTES__ = [
+                'Shopping with Joe',
+                'Dinner with Jane',
+            ];
+
+            function createNote(note) {
+                var element = document.createElement('li');
+                element.innerHTML = note;
+                return element;
+            }
+
+            function createNotes(notes, root) {
+                notes.map(createNote).forEach(function(element) {
+                    root.appendChild(element);
+                });
+
+            }
+
+            createNotes(__NOTES__, document.getElementById('notes'));
+        </script>
+    </body>
+</html>
