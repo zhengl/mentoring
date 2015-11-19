@@ -4,6 +4,7 @@
         <title>Notes</title>
     </head>
     <body>
+        <input type="text" onkeyup="onSearch(this)" placeholder="Search..." />
         <form name="addNoteForm" onsubmit="onAddNote(event, __ROOT__)">
             <input type="text" name="newNote" placeholder="Please add note" />
             <button type="submit">ADD</button>
@@ -19,7 +20,7 @@
 
             function createNote(note) {
                 var element = document.createElement('li');
-                element.innerHTML = note;
+                var textNode = document.createTextNode(note);
                 var removeButton = document.createElement('button');
                 removeButton.innerHTML = 'REMOVE';
                 removeButton.onclick = function() {
@@ -27,6 +28,7 @@
                     __NOTES__.splice(__NOTES__.indexOf(note), 1);
                 }
                 element.appendChild(removeButton);
+                element.appendChild(textNode);
                 return element;
             }
 
@@ -41,9 +43,21 @@
                 event.preventDefault();
 
                 var newNote = addNoteForm.newNote.value;
+                if(newNote.trim() === '') {
+                    return;
+                }
+
                 root.appendChild(createNote(newNote));
                 __NOTES__.push(newNote);
                 addNoteForm.newNote.value = '';
+            }
+
+            function onSearch(input) {
+                var regex = new RegExp(input.value, 'i');
+                var filteredNotes = __NOTES__.filter(function(note) {
+                    return note.match(regex);
+                });
+                createNotes(filteredNotes, __ROOT__);
             }
 
             createNotes(__NOTES__, __ROOT__);
