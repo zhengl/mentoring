@@ -1,3 +1,5 @@
+import uuid from 'uuid';
+
 export default class Notes {
   constructor() {
     this.notes = [];
@@ -18,11 +20,12 @@ export default class Notes {
 
   addingNote(note) {
     return new Promise((resolve, reject) => {
-      this.notes.push({
-        id: 3,
+      const newNote = {
+        id: uuid.v4(),
         content: note
-      });
-      resolve();
+      };
+      this.notes.push(newNote);
+      resolve(newNote);
     });
   }
 

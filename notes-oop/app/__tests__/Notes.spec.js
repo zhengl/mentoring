@@ -29,7 +29,8 @@ describe('Notes', () => {
 
   it('should add a new note', (done) => {
     const newNote = 'note 3';
-    notes.addingNote(newNote).then(() => {
+    notes.addingNote(newNote).then((returnedNote) => {
+      expect(returnedNote).to.have.property('content', newNote);
       expect(notes.gettingNotes()).to.eventually.have.deep.property(`[${data.length}].content`, newNote).notify(done);
     });
   });
