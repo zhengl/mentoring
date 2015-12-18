@@ -6,6 +6,7 @@ function start(port) {
       console.log('Connected to chat server');
   });
   process.stdin.pipe(client);
+
   client.on('data', function(data) {
       console.log(data.toString());
   });
@@ -14,3 +15,5 @@ function start(port) {
 module.exports = {
   start: start,
 };
+
+
