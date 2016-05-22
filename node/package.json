@@ -1,0 +1,16 @@
+{
+  "name": "mentoring",
+  "version": "1.0.0",
+  "description": "An awesome example of fs and http modules from node.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./server",
+    "analyze": "node ./analyze",
+    "watch": "watch \"npm run analyze\" ./lib"
+  },
+  "author": "Zheng Li",
+  "license": "ISC",
+  "devDependencies": {
+    "watch": "^0.18.0"
+  }
+}
