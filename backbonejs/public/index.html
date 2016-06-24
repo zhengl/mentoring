@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+  <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+  <script type="text/javascript" src="http://backbonejs.org/backbone-min.js"></script>
+  <script id="photo-view-template" type="text/template">
+    <img src="<%- url %>" />
+  </script>
+  <script type="text/javascript">
+
+    const PhotoView = Backbone.View.extend({
+      tagName: 'li',
+
+      className: 'photo',
+
+      template: _.template($('#photo-view-template').html()),
+
+      render: function() {
+        this.$el.html(this.template(this.model.attributes));
+
+        return this;
+      }
+    });
+
+    const Photos = Backbone.Collection.extend({
+      url: '/photos',
+    });
+
+    const PhotosView = Backbone.View.extend({
+      tagName: 'ul',
+
+      className: 'photos',
+
+      initialize: function() {
+        this.listenTo(this.collection, 'add', this.addPhoto);
+      },
+
+      addPhoto: function(model) {
+        this.$el.append(new PhotoView({
+          model,
+        }).render().el);
+      }
+    });
+
+    const App = Backbone.View.extend({
+      render: function() {
+        const photos = new Photos();
+        this.$el.append(new PhotosView({
+          collection: photos,
+        }).render().el);
+        photos.fetch();
+
+        return this;
+      }
+    });
+
+    const app = new App({
+      el: $('#app')
+    });
+    app.render();
+
+  </script>
+</body>
+</html>
