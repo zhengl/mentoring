@@ -8,27 +8,53 @@
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
   <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
   <script type="text/javascript" src="http://backbonejs.org/backbone-min.js"></script>
-  <script id="photo-view-template" type="text/template">
+  <script type="text/template" id="app-template">
+    <input class="add-input" />
+    <button class="add">Add</button>
+  </script>
+  <script type="text/template" id="photo-view-template">
     <img src="<%- url %>" />
+    <button class="delete">Remove</button>
+    <input class="update-input" />
+    <button class="update">Update</button>
   </script>
   <script type="text/javascript">
+    const Photos = Backbone.Collection.extend({
+      url: '/photos'
+    });
 
     const PhotoView = Backbone.View.extend({
+      template: _.template($('#photo-view-template').html()),
+
       tagName: 'li',
 
       className: 'photo',
 
-      template: _.template($('#photo-view-template').html()),
+      events: {
+        'click .delete': 'onRemove',
+        'click .update': 'onUpdate'
+      },
+
+      initialize: function() {
+        this.listenTo(this.model, 'destroy', this.remove);
+        this.listenTo(this.model, 'change:url', this.render);
+      },
+
+      onRemove: function() {
+        this.model.destroy();
+      },
+
+      onUpdate: function() {
+        this.model.save({
+          url: this.$input.val(),
+        });
+      },
 
       render: function() {
         this.$el.html(this.template(this.model.attributes));
-
+        this.$input = this.$('.update-input');
         return this;
       }
-    });
-
-    const Photos = Backbone.Collection.extend({
-      url: '/photos',
     });
 
     const PhotosView = Backbone.View.extend({
@@ -37,33 +63,48 @@
       className: 'photos',
 
       initialize: function() {
-        this.listenTo(this.collection, 'add', this.addPhoto);
+        this.listenTo(this.collection, 'add', this.addPhotoView);
       },
 
-      addPhoto: function(model) {
-        this.$el.append(new PhotoView({
-          model,
-        }).render().el);
+      addPhotoView: function(model) {
+        const photoView = new PhotoView({
+          model: model,
+        });
+        this.$el.append(photoView.render().el);
       }
     });
 
     const App = Backbone.View.extend({
-      render: function() {
-        const photos = new Photos();
-        this.$el.append(new PhotosView({
-          collection: photos,
-        }).render().el);
-        photos.fetch();
+      template: _.template($('#app-template').html()),
 
-        return this;
+      events: {
+        'click .add': 'onAdd',
+      },
+
+      onAdd: function() {
+        const photo = new Backbone.Model({
+          url: this.$addInput.val()
+        });
+        this.photos.add(photo);
+        photo.save();
+      },
+
+      render: function() {
+        this.photos = new Photos();
+        const photosView = new PhotosView({
+          collection: this.photos,
+        });
+        this.$el.html(this.template());
+        this.$el.append(photosView.render().el);
+        this.photos.fetch();
+
+        this.$addInput = this.$('.add-input');
       }
     });
 
     const app = new App({
-      el: $('#app')
-    });
-    app.render();
-
+      el: $('#app'),
+    }).render();
   </script>
 </body>
 </html>

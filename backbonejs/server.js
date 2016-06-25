@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 8080;
 
 let PHOTOS = [];
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 2; i++) {
   PHOTOS.push({
     id: faker.random.uuid(),
     url: faker.image.avatar(),
@@ -15,7 +15,7 @@ for (let i = 0; i < 10; i++) {
 }
 
 function getPhoto(id) {
-  return PHOTOS.find(photo.id === id);
+  return PHOTOS.find(photo => photo.id === id);
 }
 
 app.use(express.static('public'));
@@ -51,7 +51,7 @@ app.put('/photos/:id', (req, res) => {
   const toBeUpdatedPhoto = getPhoto(req.params.id);
 
   if (toBeUpdatedPhoto) {
-    toBeUpdatedPhoto.assign(req.body);
+    Object.assign(toBeUpdatedPhoto, req.body);
     res.json(toBeUpdatedPhoto);
   } else {
     res.status(404).end();
